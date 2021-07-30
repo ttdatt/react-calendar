@@ -10,9 +10,18 @@ interface Props {
   yearMatrixStart: number;
   yearMatrixEnd: number;
   layoutCalcs: CSSProps;
+  inFocus: boolean;
+  focusedYear: number;
 }
 
-function YearSelectorComponent({ onChangeViewType, onChangeViewingYear, yearMatrixStart, layoutCalcs }: Props) {
+function YearSelectorComponent({
+  onChangeViewType,
+  onChangeViewingYear,
+  yearMatrixStart,
+  layoutCalcs,
+  inFocus,
+  focusedYear,
+}: Props) {
   // TODO add highlight slected dates years
   const yearsMatrix = useMemo<YearCell[][]>(() => {
     return getYearsViewMetrix(yearMatrixStart, {});
@@ -25,10 +34,13 @@ function YearSelectorComponent({ onChangeViewType, onChangeViewingYear, yearMatr
           {row.map((cell) => (
             <div
               style={layoutCalcs.years.arc_view_cell}
-              className={`arc_view_cell${cell.isCurrentYear ? ' arc_this_year' : ''}`}
+              className={`arc_view_cell${cell.isCurrentYear ? ' arc_this_year' : ''}${
+                inFocus && cell.year === focusedYear ? ' arc_focused' : ''
+              }`}
               key={cell.year}
             >
               <button
+                autoFocus={inFocus && cell.year === focusedYear}
                 style={layoutCalcs.months.arc_view_cell_value_button}
                 onClick={() => {
                   onChangeViewingYear(cell.year);

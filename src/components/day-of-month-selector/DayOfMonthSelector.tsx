@@ -2,7 +2,15 @@ import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import type { CSSProps, DayOfMonthCell, MonthIndices, Value, WeekdayIndices } from '../../utils/types';
 
-import { addDays, getDaysOfMonthViewMetrix, getNextDate, isBefore, isValid, toString } from '../../utils/date-utils';
+import {
+  addDays,
+  getDaysOfMonthViewMetrix,
+  getNextDate,
+  isBefore,
+  isEqual,
+  isValid,
+  toString,
+} from '../../utils/date-utils';
 
 interface Props {
   onChangeViewingYear: (year: number) => unknown;
@@ -41,6 +49,9 @@ interface Props {
   highlights: Date[];
   isDisabled: (date: Date) => boolean;
   checkIfWeekend: (date: Date) => boolean;
+  inFocus: boolean;
+  onChangeFocusedDate: (date: Date) => unknown;
+  focusedDate: Date;
   today: Date;
   onChange?: (value: Value) => unknown | Promise<unknown>;
   layoutCalcs: CSSProps;
@@ -83,6 +94,9 @@ function DayOfMonthSelectorComponent({
   checkIfWeekend,
   highlights,
   disableToday,
+  inFocus,
+  onChangeFocusedDate,
+  focusedDate,
 }: Props) {
   const [highlightsMap] = useState<Record<string, 1>>(() => {
     if (Array.isArray(highlights)) {
@@ -232,7 +246,7 @@ function DayOfMonthSelectorComponent({
           );
       } else {
         onChangenSelectedDate(clickedDate);
-
+        onChangeFocusedDate(clickedDate);
         onChange && onChange(clickedDate);
       }
 
@@ -267,6 +281,39 @@ function DayOfMonthSelectorComponent({
     ],
   );
 
+  // useEffect(() => {
+  //   const hasFocus = inFocus;
+
+  //   if (!hasFocus) {
+  //     return;
+  //   }
+
+  //   function onKeyPress(e: KeyboardEvent) {
+  //     console.log('keypress');
+  //     switch (e.key) {
+  //       case 'ArrowLeft':
+  //         onChangeFocusedDate(getPrevDate(focusedDate));
+  //         break;
+  //       case 'ArrowRight':
+  //         onChangeFocusedDate(getNextDate(focusedDate));
+  //         break;
+  //       case 'ArrowUp':
+  //         onChangeFocusedDate(subtractDays(focusedDate, 7).endDate);
+  //         break;
+  //       case 'ArrowDown':
+  //         onChangeFocusedDate(addDays(focusedDate, 7).endDate);
+  //         break;
+  //     }
+  //     e.stopPropagation();
+  //   }
+
+  //   console.log('registering'), window.addEventListener('keyup', onKeyPress);
+
+  //   return () => {
+  //     console.log('deregistering'), window.removeEventListener('keyup', onKeyPress);
+  //   };
+  // }, [inFocus, onChangeFocusedDate, focusedDate]);
+
   return (
     <div style={layoutCalcs.dayOfMonth['arc_view-days-of-month']} className="arc_view-days-of-month" role="grid">
       {daysOfMMonthViewMatrix.map((row, index) => (
@@ -292,13 +339,16 @@ function DayOfMonthSelectorComponent({
                 cell.isDisabled ? ' arc_disabled' : ''
               }${cell.isInRange ? ' arc_in_range' : ''}${cell.isRangeStart ? ' arc_range_start' : ''}${
                 cell.isRangeEnd ? ' arc_range_end' : ''
-              }${isRangeSelectModeOn ? ' arc_range_mode' : ''}`}
+              }${isRangeSelectModeOn ? ' arc_range_mode' : ''}${
+                inFocus && isEqual(cell.date, focusedDate) ? ' arc_focused' : ''
+              }`}
             >
               <div style={layoutCalcs.dayOfMonth.arc_view_cell_value} className="arc_view_cell_value">
                 <button
+                  autoFocus={inFocus && isEqual(cell.date, focusedDate)}
                   style={layoutCalcs.dayOfMonth.arc_view_cell_value_button}
                   disabled={cell.isDisabled}
-                  tabIndex={cell.isDisabled ? -1 : 0}
+                  tabIndex={-1}
                   onClick={() => onDateClicked(cell)}
                 >
                   {cell.dayOfMonth}

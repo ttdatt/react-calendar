@@ -151,6 +151,12 @@
   color: var(--arc-color-text-today);
 }
 
+.arc_view-months .arc_view_cell.arc_focused button {
+  border: 1px solid currentColor;
+  border-style: dashed;
+  border-radius: 2px;
+}
+
 /** arc_view-years **/
 
 .arc_view-years .arc_view_cell button {
@@ -166,6 +172,12 @@
 .arc_view-years .arc_view_cell.arc_this_year {
   border-radius: 6px;
   color: var(--arc-color-text-today);
+}
+
+.arc_view-years .arc_view_cell.arc_focused button {
+  border: 1px solid currentColor;
+  border-style: dashed;
+  border-radius: 2px;
 }
 
 /** Days of Month View - Weekdays Header Row **/
@@ -215,6 +227,14 @@
 
 .arc_view-days-of-month .arc_view_cell.arc_wknd:not(.arc_active) button {
   color: var(--arc-color-text-dom-weekend-inactive);
+}
+
+.arc_view-days-of-month
+  .arc_view_cell.arc_focused:not(.arc_selected):not(.arc_range_end):not(.arc_range_start)
+  .arc_view_cell_value {
+  border: 1px solid currentColor;
+  border-style: dashed;
+  border-radius: 2px;
 }
 
 /* in range bg colors */

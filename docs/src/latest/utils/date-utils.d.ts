@@ -2,10 +2,21 @@ import type { MonthIndices, WeekdayIndices, MonthCell, YearCell, DayOfMonthCell,
 /**
  * Add number of days to a month.
  */
-export declare function addDays(date: Date, numberOfDaysToAdd: number, options: {
-    isDisabled: (arg: Date) => boolean;
+export declare function addDays(date: Date, numberOfDaysToAdd: number, options?: {
+    isDisabled?: (arg: Date) => boolean;
     skipDisabledDatesInRange?: boolean;
     upperLimit?: Date;
+}): {
+    endDate: Date;
+    limitReached: boolean;
+};
+/**
+ * Subtract num of days
+ */
+export declare function subtractDays(date: Date, numberOfDaysToSubtract: number, options?: {
+    isDisabled?: (arg: Date) => boolean;
+    skipDisabledDatesInRange?: boolean;
+    lowerLimit?: Date;
 }): {
     endDate: Date;
     limitReached: boolean;

@@ -9,9 +9,11 @@ interface Props {
   onChangeViewType: (view: 'month_dates' | 'months' | 'years') => unknown;
   onChangeViewingMonth: (month: MonthIndices) => unknown;
   layoutCalcs: CSSProps;
+  inFocus: boolean;
+  focusedMonth: MonthIndices;
 }
 
-function MonthSelectorComponent({ onChangeViewingMonth, onChangeViewType, layoutCalcs }: Props) {
+function MonthSelectorComponent({ onChangeViewingMonth, onChangeViewType, layoutCalcs, focusedMonth, inFocus }: Props) {
   const monthsViewMatrix = useMemo<MonthCell[][]>(() => {
     return getMonthViewMetrix({});
   }, []);
@@ -23,10 +25,13 @@ function MonthSelectorComponent({ onChangeViewingMonth, onChangeViewType, layout
           {row.map((cell) => (
             <div
               style={layoutCalcs.months.arc_view_cell}
-              className={`arc_view_cell${cell.isCurrentMonth ? ' arc_this_month' : ''}`}
+              className={`arc_view_cell${cell.isCurrentMonth ? ' arc_this_month' : ''}${
+                inFocus && cell.month === focusedMonth ? ' arc_focused' : ''
+              }`}
               key={cell.month}
             >
               <button
+                autoFocus={inFocus && cell.month === focusedMonth}
                 style={layoutCalcs.months.arc_view_cell_value_button}
                 onClick={() => {
                   onChangeViewingMonth(cell.month);

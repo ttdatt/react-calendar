@@ -160,7 +160,7 @@ export function App(): React.ReactElement {
           </div>
         </div>
       </div>
-      <div>
+      {/* <div>
         <div className="desc">
           <p>Multiple Dates View</p>
         </div>
@@ -464,7 +464,7 @@ export function App(): React.ReactElement {
           </div>
         </div>
       </div>
-      <div>
+      <div> 
         <div>
           <p>Can be rendered on the server-side</p>
           <small>The following markup is created using ReactDomServer.renderToStaticMarkup() method</small>
@@ -481,7 +481,7 @@ export function App(): React.ReactElement {
             ),
           }}
         ></div>
-      </div>
+      </div>*/}
     </div>
   );
 }

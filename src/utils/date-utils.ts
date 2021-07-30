@@ -18,10 +18,10 @@ export function addDays(
   date: Date,
   numberOfDaysToAdd: number,
   options: {
-    isDisabled: (arg: Date) => boolean;
+    isDisabled?: (arg: Date) => boolean;
     skipDisabledDatesInRange?: boolean;
     upperLimit?: Date;
-  },
+  } = {},
 ): { endDate: Date; limitReached: boolean } {
   let daysLeftToAdd = numberOfDaysToAdd;
   let newDate = date;
@@ -44,13 +44,60 @@ export function addDays(
     newDate = nextCouldBeDate;
 
     if (options.skipDisabledDatesInRange) {
-      if (options.skipDisabledDatesInRange && !options.isDisabled(nextCouldBeDate)) {
+      if (options.skipDisabledDatesInRange && options.isDisabled && !options.isDisabled(nextCouldBeDate)) {
         // if skipping is enabled and date is not disabled then decrement
         daysLeftToAdd--;
       }
     } else {
       // if skipping is disabled then just decrement
       daysLeftToAdd--;
+    }
+    loopControl++;
+  }
+
+  return { endDate: newDate, limitReached };
+}
+
+/**
+ * Subtract num of days
+ */
+export function subtractDays(
+  date: Date,
+  numberOfDaysToSubtract: number,
+  options: {
+    isDisabled?: (arg: Date) => boolean;
+    skipDisabledDatesInRange?: boolean;
+    lowerLimit?: Date;
+  } = {},
+): { endDate: Date; limitReached: boolean } {
+  let daysLeftToSubtract = numberOfDaysToSubtract;
+  let newDate = date;
+  let limitReached = false;
+  let loopControl = 0;
+
+  while (daysLeftToSubtract > 0) {
+    if (loopControl === 1500) {
+      limitReached = true;
+      break;
+    }
+
+    const prevCouldBeDate = getPrevDate(newDate);
+
+    if (options.lowerLimit && isEqual(options.lowerLimit, prevCouldBeDate)) {
+      limitReached = true;
+      break;
+    }
+
+    newDate = prevCouldBeDate;
+
+    if (options.skipDisabledDatesInRange) {
+      if (options.skipDisabledDatesInRange && options.isDisabled && !options.isDisabled(prevCouldBeDate)) {
+        // if skipping is enabled and date is not disabled then decrement
+        daysLeftToSubtract--;
+      }
+    } else {
+      // if skipping is disabled then just decrement
+      daysLeftToSubtract--;
     }
     loopControl++;
   }

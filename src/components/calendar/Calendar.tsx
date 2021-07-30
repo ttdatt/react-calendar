@@ -20,6 +20,10 @@ import {
   checkIfWeekendHOF,
   giveRangeDays,
   validateAndReturnDateFormatter,
+  getPrevDate,
+  getNextDate,
+  subtractDays,
+  addDays,
 } from '../../utils/date-utils';
 
 import { Header } from '../header/Header';
@@ -30,6 +34,8 @@ import { DayOfMonthSelector } from '../day-of-month-selector/DayOfMonthSelector'
 
 import { getStyles } from '../../utils/styles';
 
+import './styles.css';
+
 function Calendar({
   value,
   isMultiSelector,
@@ -37,7 +43,7 @@ function Calendar({
   isRangeSelector,
   useDarkMode = false,
   weekends,
-  highlights = [],
+  highlights,
   skipWeekendsInRange = false,
   viewDate: initialViewDate,
   allowFewerDatesThanRange = false,
@@ -56,6 +62,8 @@ function Calendar({
   disableToday = false,
 }: CalendarProps): React.ReactElement<CalendarProps> {
   const styles = useMemo(() => getStyles(size, fontSize), [size, fontSize]);
+
+  const memoizedhighlights = useMemo(() => highlights || [], [highlights]);
 
   const [today] = useState(new Date());
 
@@ -326,8 +334,135 @@ function Calendar({
     [startOfTheWeek, weekendIndexes],
   );
 
+  // selected focused date
+  const [focusedDate, setfocusedDate] = useState(new Date(yearInView, monthInView, 1));
+
+  // selected focused month
+  const [focusedMonth, setfocusedMonth] = useState(monthInView);
+
+  // selected focused year
+  const [focusedYear, setfocusedYear] = useState(yearInView);
+
+  // set is in focused
+  const [focused, setfocused] = useState(false);
+
+  useEffect(() => {
+    const hasFocus = focused;
+
+    if (!hasFocus) {
+      return;
+    }
+
+    function onKeyPress(e: KeyboardEvent) {
+      switch (e.key) {
+        case 'Enter':
+        case ' ': {
+          switch (view) {
+            case 'month_dates':
+              setSelectedDate(focusedDate);
+              break;
+            case 'months':
+              setMonthInView(focusedMonth);
+              break;
+            case 'years':
+              setYearInView(focusedMonth);
+              break;
+          }
+          break;
+        }
+        case 'ArrowLeft':
+          switch (view) {
+            case 'month_dates':
+              setfocusedDate(getPrevDate(focusedDate));
+              break;
+            case 'months':
+              setfocusedMonth(getPreviousMonth(focusedMonth));
+              break;
+            case 'years':
+              setfocusedYear(getPreviousYear(focusedYear));
+              break;
+          }
+          break;
+        case 'ArrowRight':
+          switch (view) {
+            case 'month_dates':
+              setfocusedDate(getNextDate(focusedDate));
+              break;
+            case 'months':
+              setfocusedMonth(getNextMonth(focusedMonth));
+              break;
+            case 'years':
+              setfocusedYear(getNextYear(focusedYear));
+              break;
+          }
+          break;
+        case 'ArrowUp':
+          switch (view) {
+            case 'month_dates':
+              setfocusedDate(subtractDays(focusedDate, 7).endDate);
+              break;
+            case 'months':
+              setfocusedMonth(getPreviousMonth(getPreviousMonth(getPreviousMonth(focusedMonth))));
+              break;
+            case 'years':
+              setfocusedYear(focusedYear > 5 ? focusedYear - 5 : focusedYear);
+              break;
+          }
+          break;
+        case 'ArrowDown':
+          switch (view) {
+            case 'month_dates':
+              setfocusedDate(addDays(focusedDate, 7).endDate);
+              break;
+            case 'months':
+              setfocusedMonth(getNextMonth(getNextMonth(getNextMonth(focusedMonth))));
+              break;
+            case 'years':
+              setfocusedYear(focusedYear + 5);
+              break;
+          }
+          break;
+      }
+      e.stopPropagation();
+    }
+
+    console.log('registering'), window.addEventListener('keyup', onKeyPress);
+
+    return () => {
+      console.log('deregistering'), window.removeEventListener('keyup', onKeyPress);
+    };
+  }, [
+    view,
+    focused,
+    setfocusedDate,
+    setfocusedMonth,
+    setfocusedYear,
+    setYearInView,
+    setMonthInView,
+    setSelectedDate,
+    focusedDate,
+    focusedMonth,
+    focusedYear,
+  ]);
+
   return (
-    <div style={styles.root.arc} className={computedClass}>
+    <div
+      onFocus={() => {
+        !focused && setfocused(true);
+      }}
+      onBlur={(e) => {
+        const { currentTarget, relatedTarget } = e;
+        console.log('blurr');
+        if (relatedTarget && currentTarget.contains(relatedTarget as Node)) {
+          // do nothing
+        } else {
+          console.log('setting false');
+          setfocused(false);
+        }
+      }}
+      style={styles.root.arc}
+      className={computedClass}
+    >
       <Header
         layoutCalcs={styles}
         onClickPrev={onPrevClick}
@@ -341,10 +476,18 @@ function Calendar({
       />
       <div style={styles.root.arc_view} className="arc_view">
         {view === 'months' && (
-          <MonthSelector layoutCalcs={styles} onChangeViewType={changeView} onChangeViewingMonth={changeMonthInView} />
+          <MonthSelector
+            inFocus={focused}
+            focusedMonth={focusedMonth}
+            layoutCalcs={styles}
+            onChangeViewType={changeView}
+            onChangeViewingMonth={changeMonthInView}
+          />
         )}
         {view === 'years' && (
           <YearSelector
+            inFocus={focused}
+            focusedYear={focusedYear}
             layoutCalcs={styles}
             onChangeViewType={changeView}
             onChangeViewingYear={changeYearInView}
@@ -357,6 +500,9 @@ function Calendar({
             <WeekDaysRow layoutCalcs={styles} weekStartIndex={startOfTheWeek} weekendIndices={weekendIndexes} />
             <DayOfMonthSelector
               isRangeSelectModeOn={isRangeSelectModeOn}
+              inFocus={focused}
+              focusedDate={focusedDate}
+              onChangeFocusedDate={setfocusedDate}
               setIsRangeSelectModeOn={setIsRangeSelectModeOn}
               layoutCalcs={styles}
               skipDisabledDatesInRange={!!skipDisabledDatesInRange}
@@ -393,7 +539,7 @@ function Calendar({
               viewingYear={yearInView}
               disableFuture={disableFuture}
               disablePast={disablePast}
-              highlights={highlights}
+              highlights={memoizedhighlights}
               disableToday={disableToday}
             />
           </>

@@ -37,10 +37,13 @@ interface Props {
     highlights: Date[];
     isDisabled: (date: Date) => boolean;
     checkIfWeekend: (date: Date) => boolean;
+    inFocus: boolean;
+    onChangeFocusedDate: (date: Date) => unknown;
+    focusedDate: Date;
     today: Date;
     onChange?: (value: Value) => unknown | Promise<unknown>;
     layoutCalcs: CSSProps;
 }
-declare function DayOfMonthSelectorComponent({ selectedDate, selectedRangeStart, selectedRangeEnd, newSelectedRangeStart, weekStartIndex, onChangeViewingYear, onChangeViewingMonth, newSelectedRangeEnd, isRangeSelectorView, skipDisabledDatesInRange, setIsRangeSelectModeOn, fixedRangeLength, isFixedRangeView, isRangeSelectModeOn, isDisabled, onChangenSelectedMultiDates, selectedMultiDates, isMultiSelectorView, today, viewingMonth, onChangenNewSelectedRangeEnd, onChangenNewSelectedRangeStart, onChangenSelectedRangeEnd, onChangenSelectedRangeStart, onChangenSelectedDate, layoutCalcs, weekendIndices, onChange, viewingYear, allowFewerDatesThanRange, disableFuture, disablePast, lockView, checkIfWeekend, highlights, disableToday, }: Props): JSX.Element;
+declare function DayOfMonthSelectorComponent({ selectedDate, selectedRangeStart, selectedRangeEnd, newSelectedRangeStart, weekStartIndex, onChangeViewingYear, onChangeViewingMonth, newSelectedRangeEnd, isRangeSelectorView, skipDisabledDatesInRange, setIsRangeSelectModeOn, fixedRangeLength, isFixedRangeView, isRangeSelectModeOn, isDisabled, onChangenSelectedMultiDates, selectedMultiDates, isMultiSelectorView, today, viewingMonth, onChangenNewSelectedRangeEnd, onChangenNewSelectedRangeStart, onChangenSelectedRangeEnd, onChangenSelectedRangeStart, onChangenSelectedDate, layoutCalcs, weekendIndices, onChange, viewingYear, allowFewerDatesThanRange, disableFuture, disablePast, lockView, checkIfWeekend, highlights, disableToday, inFocus, onChangeFocusedDate, focusedDate, }: Props): JSX.Element;
 export declare const DayOfMonthSelector: React.MemoExoticComponent<typeof DayOfMonthSelectorComponent>;
 export {};
