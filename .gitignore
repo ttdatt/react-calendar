@@ -1,5 +1,5 @@
 .DS_Store
 node_modules
-dist
+.idea
 .rpt2_cache
 docs/src/latest/
