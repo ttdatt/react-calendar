@@ -205,6 +205,7 @@ export interface CalendarProps {
    * This callback will be called for each date in a multiselect calendar
    */
   onEachMultiSelect?: (value: Value) => any | Promise<any> | void;
+  onChangeMonth?: (month: number, year: number) => void;
 }
 
 type CommonProps = Required<
@@ -253,6 +254,7 @@ export interface CalendarViewProps extends CommonProps {
   maxAllowedDate: string | undefined;
   minAllowedDate: string | undefined;
   weekendMap: Record<WeekdayIndices, 1>;
+  onChangeMonth?: (month: number, year: number) => void;
 }
 
 export interface DayOfMonthSelectorProps

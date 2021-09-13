@@ -96,6 +96,7 @@ function Component(
     disablePast,
     highlightsMap,
     disableToday,
+    onChangeMonth,
   }: CalendarViewProps,
   ref: React.Ref<CalendarRef>,
 ): React.ReactElement<CalendarViewProps> {
@@ -231,6 +232,10 @@ function Component(
     setStartingYearForCurrRange,
     startingYearForCurrRange,
   ]);
+
+  useEffect(() => {
+    onChangeMonth?.(monthInView, yearInView);
+  }, [monthInView, yearInView]);
 
   const onNextClick = useCallback(() => {
     if (view === 'month_dates') {
